@@ -1,0 +1,217 @@
+<!-- views/index.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { text-align: center; color: #2d3748; }
+        .subtitle { text-align: center; color: #718096; margin-bottom: 25px; }
+        .tab-buttons { display: flex; gap: 10px; margin-bottom: 25px; }
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .tab-btn.active { background: #667eea; color: white; border-color: #667eea; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; color: #2d3748; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+        input:focus { outline: none; border-color: #667eea; }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.4); }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+        }
+        .alert-success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
+        .alert-error { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
+        .hidden { display: none; }
+        .footer { text-align: center; margin-top: 25px; color: #a0aec0; font-size: 12px; }
+        .register-link { text-align: center; margin-top: 15px; font-size: 14px; color: #718096; }
+        .register-link a { color: #667eea; cursor: pointer; text-decoration: none; font-weight: 600; }
+        .register-link a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Task 6</h1>
+        <p class="subtitle">Register or Login</p>
+        
+        <div id="messageContainer"></div>
+        
+        <div class="tab-buttons">
+            <button class="tab-btn active" id="loginTab" onclick="switchTab('login')">Login</button>
+            <button class="tab-btn" id="registerTab" onclick="switchTab('register')">Register</button>
+        </div>
+        
+        <!-- Login -->
+        <div id="loginForm">
+            <form onsubmit="login(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn">🔐 Sign In</button>
+            </form>
+            <div class="register-link">
+                No account? <a onclick="switchTab('register')">Register</a>
+            </div>
+        </div>
+        
+        <!-- Register -->
+        <div id="registerForm" class="hidden">
+            <form onsubmit="register(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="regUsername" placeholder="Choose username" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Min 6 characters" required>
+                </div>
+                <button type="submit" class="btn">✅ Register</button>
+            </form>
+            <div class="register-link">
+                Have account? <a onclick="switchTab('login')">Login</a>
+            </div>
+        </div>
+        
+        <div class="footer">&copy; 2026 Cognifyz Technologies</div>
+    </div>
+    
+    <script>
+        function switchTab(tab) {
+            if (tab === 'login') {
+                document.getElementById('loginTab').classList.add('active');
+                document.getElementById('registerTab').classList.remove('active');
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
+            } else {
+                document.getElementById('registerTab').classList.add('active');
+                document.getElementById('loginTab').classList.remove('active');
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+            }
+            document.getElementById('messageContainer').innerHTML = '';
+        }
+        
+        function showMessage(msg, type) {
+            document.getElementById('messageContainer').innerHTML = 
+                `<div class="alert alert-${type}">${msg}</div>`;
+        }
+        
+        async function login(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                console.log('Login response:', data);
+                
+                if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    window.location.href = '/dashboard?token=' + data.token;
+                } else {
+                    showMessage(data.message || 'Login failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+            }
+        }
+        
+        async function register(e) {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            
+            if (username.length < 3) {
+                showMessage('Username must be at least 3 characters', 'error');
+                return;
+            }
+            if (password.length < 6) {
+                showMessage('Password must be at least 6 characters', 'error');
+                return;
+            }
+            
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                const data = await res.json();
+                console.log('Register response:', data);
+                
+                if (data.success) {
+                    showMessage('✅ Registration successful! Please login.', 'success');
+                    switchTab('login');
+                    document.getElementById('loginEmail').value = email;
+                } else {
+                    showMessage(data.message || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

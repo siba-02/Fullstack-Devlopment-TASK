@@ -1,0 +1,545 @@
+<!-- views/index.ejs - Task 2: Inline Styles, Basic Interaction, and Server-Side Validation -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    
+    <!-- ===== INLINE STYLES ===== -->
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        
+        /* ===== HEADER ===== */
+        h1 {
+            color: #2d3748;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #718096;
+            margin-bottom: 25px;
+        }
+        
+        /* ===== FORM STYLES ===== */
+        .form-group {
+            margin-bottom: 22px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #2d3748;
+        }
+        
+        .label-required {
+            color: #e53e3e;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+        }
+        
+        /* ===== VALIDATION STATES (Added by JavaScript) ===== */
+        input.error, textarea.error {
+            border-color: #fc8181;
+            background: #fff5f5;
+        }
+        
+        input.success, textarea.success {
+            border-color: #68d391;
+            background: #f0fff4;
+        }
+        
+        /* ===== ERROR MESSAGES ===== */
+        .error-message {
+            color: #e53e3e;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        /* ===== CHARACTER COUNTER ===== */
+        .char-counter {
+            text-align: right;
+            font-size: 13px;
+            color: #a0aec0;
+            margin-top: 5px;
+            transition: color 0.3s;
+        }
+        
+        .char-counter.warning {
+            color: #e53e3e;
+        }
+        
+        /* ===== BUTTON ===== */
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        /* ===== ALERTS ===== */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid;
+            animation: slideDown 0.5s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .alert-danger {
+            background: #fff5f5;
+            color: #c53030;
+            border-color: #fc8181;
+        }
+        
+        .alert-danger ul {
+            margin-top: 8px;
+            padding-left: 20px;
+        }
+        
+        .alert-success {
+            background: #f0fff4;
+            color: #276749;
+            border-color: #68d391;
+        }
+        
+        /* ===== SUBMISSIONS ===== */
+        hr {
+            margin: 30px 0;
+            border: none;
+            border-top: 2px dashed #e2e8f0;
+        }
+        
+        .submissions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .badge {
+            background: #667eea;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .submission-item {
+            background: #f7fafc;
+            padding: 18px;
+            margin: 12px 0;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s;
+        }
+        
+        .submission-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .submission-item h4 {
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+        
+        .submission-item .email {
+            color: #667eea;
+            font-size: 14px;
+        }
+        
+        .submission-item .message {
+            color: #4a5568;
+            margin: 8px 0;
+        }
+        
+        .submission-item .timestamp {
+            color: #a0aec0;
+            font-size: 12px;
+        }
+        
+        .no-submissions {
+            color: #a0aec0;
+            text-align: center;
+            padding: 30px 0;
+        }
+        
+        /* ===== FOOTER ===== */
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #a0aec0;
+            font-size: 13px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- ===== HEADER ===== -->
+        <h1>🔒 Task 2: Form with Validation</h1>
+        <p class="subtitle">
+            <strong>Client-side</strong> + <strong>Server-side</strong> validation with temporary storage
+        </p>
+        
+        <!-- ===== DISPLAY SERVER-SIDE ERRORS ===== -->
+        <% if (errors && errors.length > 0) { %>
+            <div class="alert alert-danger">
+                <strong>⚠️ Please fix the following errors:</strong>
+                <ul>
+                    <% errors.forEach(err => { %>
+                        <li><%= err %></li>
+                    <% }) %>
+                </ul>
+            </div>
+        <% } %>
+        
+        <!-- ===== DISPLAY SUCCESS MESSAGE ===== -->
+        <% if (success) { %>
+            <div class="alert alert-success">
+                <strong>✅ <%= success %></strong>
+            </div>
+        <% } %>
+        
+        <!-- ===== FORM ===== -->
+        <form action="/submit" method="POST" id="mainForm" novalidate>
+            
+            <!-- Name Field -->
+            <div class="form-group">
+                <label for="name">
+                    Full Name <span class="label-required">*</span>
+                </label>
+                <input type="text" 
+                       id="name" 
+                       name="name" 
+                       value="<%= formData.name || '' %>"
+                       placeholder="Enter your full name (min 2 characters)"
+                       required>
+                <div class="error-message" id="nameError">
+                    ⚠️ Name must be at least 2 characters long
+                </div>
+            </div>
+            
+            <!-- Email Field -->
+            <div class="form-group">
+                <label for="email">
+                    Email Address <span class="label-required">*</span>
+                </label>
+                <input type="email" 
+                       id="email" 
+                       name="email" 
+                       value="<%= formData.email || '' %>"
+                       placeholder="Enter your email address"
+                       required>
+                <div class="error-message" id="emailError">
+                    ⚠️ Please enter a valid email address (e.g., name@domain.com)
+                </div>
+            </div>
+            
+            <!-- Message Field -->
+            <div class="form-group">
+                <label for="message">
+                    Your Message <span class="label-required">*</span>
+                </label>
+                <textarea id="message" 
+                          name="message" 
+                          rows="4" 
+                          placeholder="Enter your message (min 10 characters)"
+                          required><%= formData.message || '' %></textarea>
+                <div class="error-message" id="messageError">
+                    ⚠️ Message must be at least 10 characters long
+                </div>
+                <div class="char-counter" id="charCounter">
+                    Characters: <span id="charCount">0</span> / 10 minimum
+                </div>
+            </div>
+            
+            <button type="submit">
+                ✉️ Submit Form
+            </button>
+        </form>
+        
+        <!-- ===== DIVIDER ===== -->
+        <hr>
+        
+        <!-- ===== SUBMISSIONS LIST ===== -->
+        <div class="submissions-header">
+            <h2 style="font-size: 20px; color: #2d3748;">📋 Recent Submissions</h2>
+            <span class="badge"><%= submissions.length %></span>
+        </div>
+        
+        <% if (submissions.length === 0) { %>
+            <div class="no-submissions">
+                <p>No submissions yet. Fill out the form above!</p>
+            </div>
+        <% } %>
+        
+        <!-- Display submissions in reverse order (newest first) -->
+        <% submissions.slice().reverse().forEach(sub => { %>
+            <div class="submission-item">
+                <h4><%= sub.name %></h4>
+                <div class="email">📧 <%= sub.email %></div>
+                <div class="message">💬 <%= sub.message %></div>
+                <div class="timestamp">🕐 Submitted: <%= sub.timestamp %></div>
+            </div>
+        <% }) %>
+        
+        <!-- ===== FOOTER ===== -->
+        <div class="footer">
+            <p>Task 2 - Inline Styles, Basic Interaction, and Server-Side Validation</p>
+            <p style="margin-top: 4px;">© Cognifyz Technologies</p>
+        </div>
+    </div>
+    
+    <!-- ============================================================ -->
+    <!-- ===== INLINE JAVASCRIPT - CLIENT-SIDE VALIDATION ===== -->
+    <!-- ============================================================ -->
+    <script>
+        // ============================================
+        // TASK 2: Client-side validation with inline JavaScript
+        // ============================================
+        
+        // Get form elements
+        const form = document.getElementById('mainForm');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const messageInput = document.getElementById('message');
+        const charCountSpan = document.getElementById('charCount');
+        const charCounter = document.getElementById('charCounter');
+        
+        // ============================================
+        // VALIDATION FUNCTIONS
+        // ============================================
+        
+        // Validate Name
+        function validateName() {
+            const value = nameInput.value.trim();
+            const error = document.getElementById('nameError');
+            
+            if (value.length < 2) {
+                nameInput.classList.add('error');
+                nameInput.classList.remove('success');
+                error.classList.add('show');
+                return false;
+            } else {
+                nameInput.classList.remove('error');
+                nameInput.classList.add('success');
+                error.classList.remove('show');
+                return true;
+            }
+        }
+        
+        // Validate Email
+        function validateEmail() {
+            const value = emailInput.value.trim();
+            const error = document.getElementById('emailError');
+            // Email regex pattern
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            
+            if (!emailPattern.test(value)) {
+                emailInput.classList.add('error');
+                emailInput.classList.remove('success');
+                error.classList.add('show');
+                return false;
+            } else {
+                emailInput.classList.remove('error');
+                emailInput.classList.add('success');
+                error.classList.remove('show');
+                return true;
+            }
+        }
+        
+        // Validate Message
+        function validateMessage() {
+            const value = messageInput.value.trim();
+            const error = document.getElementById('messageError');
+            
+            if (value.length < 10) {
+                messageInput.classList.add('error');
+                messageInput.classList.remove('success');
+                error.classList.add('show');
+                return false;
+            } else {
+                messageInput.classList.remove('error');
+                messageInput.classList.add('success');
+                error.classList.remove('show');
+                return true;
+            }
+        }
+        
+        // Update character counter
+        function updateCharCounter() {
+            const count = messageInput.value.length;
+            charCountSpan.textContent = count;
+            
+            // Change color based on character count
+            if (count < 10) {
+                charCounter.classList.add('warning');
+                charCounter.textContent = `⚠️ Characters: ${count} / 10 minimum needed`;
+            } else {
+                charCounter.classList.remove('warning');
+                charCounter.textContent = `✅ Characters: ${count} / Good!`;
+            }
+        }
+        
+        // ============================================
+        // EVENT LISTENERS (Real-time validation)
+        // ============================================
+        
+        // Name - validate on every keystroke
+        nameInput.addEventListener('input', function() {
+            validateName();
+        });
+        
+        // Email - validate on every keystroke
+        emailInput.addEventListener('input', function() {
+            validateEmail();
+        });
+        
+        // Message - validate on every keystroke and update counter
+        messageInput.addEventListener('input', function() {
+            validateMessage();
+            updateCharCounter();
+        });
+        
+        // ============================================
+        // FORM SUBMISSION - Final validation check
+        // ============================================
+        
+        form.addEventListener('submit', function(e) {
+            // Validate all fields one more time
+            const isNameValid = validateName();
+            const isEmailValid = validateEmail();
+            const isMessageValid = validateMessage();
+            
+            // If any validation fails, prevent form submission
+            if (!isNameValid || !isEmailValid || !isMessageValid) {
+                e.preventDefault();
+                
+                // Show a friendly alert
+                alert('⚠️ Please fix all errors before submitting the form!');
+                
+                // Scroll to the first error
+                const firstError = document.querySelector('.error');
+                if (firstError) {
+                    firstError.focus();
+                }
+            }
+        });
+        
+        // ============================================
+        // INITIAL SETUP
+        // ============================================
+        
+        // Update character count on page load
+        updateCharCounter();
+        
+        // Run initial validation on existing values (if any)
+        if (nameInput.value) validateName();
+        if (emailInput.value) validateEmail();
+        if (messageInput.value) {
+            validateMessage();
+            updateCharCounter();
+        }
+        
+        // Log to console that validation is active
+        console.log('✅ Task 2: Client-side validation is ACTIVE!');
+        console.log('📋 Validation rules:');
+        console.log('   - Name: Minimum 2 characters');
+        console.log('   - Email: Valid format with @ and .');
+        console.log('   - Message: Minimum 10 characters');
+        
+        // ============================================
+        // ADDITIONAL INTERACTIONS (Bonus)
+        // ============================================
+        
+        // Add click animation to submit button
+        const submitBtn = document.querySelector('button[type="submit"]');
+        submitBtn.addEventListener('mousedown', function() {
+            this.style.transform = 'scale(0.97)';
+        });
+        submitBtn.addEventListener('mouseup', function() {
+            this.style.transform = 'scale(1)';
+        });
+        
+        // Show current time in console
+        console.log(`🕐 Current time: ${new Date().toLocaleString()}`);
+        
+        console.log('💡 Tip: Try submitting the form with invalid data to see validation in action!');
+    </script>
+
+</body>
+</html>

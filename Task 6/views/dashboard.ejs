@@ -1,0 +1,116 @@
+<!-- views/dashboard.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f7fafc; min-height: 100vh; }
+        .navbar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .navbar h1 { font-size: 22px; }
+        .navbar .user-info { display: flex; align-items: center; gap: 15px; }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .card h2 { color: #2d3748; margin-bottom: 15px; }
+        .card p { padding: 6px 0; color: #4a5568; }
+        .badge {
+            background: #667eea;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .user-list { list-style: none; }
+        .user-list li {
+            padding: 10px 12px;
+            border-bottom: 1px solid #edf2f7;
+            display: flex;
+            justify-content: space-between;
+        }
+        .user-list li:last-child { border-bottom: none; }
+        .user-list .username { font-weight: 600; color: #2d3748; }
+        .user-list .email { color: #718096; font-size: 14px; }
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .navbar { padding: 15px 20px; flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>🔐 Dashboard</h1>
+        <div class="user-info">
+            <span>Welcome, <strong><%= user.username %></strong>!</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="grid">
+            <div class="card">
+                <h2>👤 Profile</h2>
+                <p><strong>Username:</strong> <%= user.username %></p>
+                <p><strong>Email:</strong> <%= user.email %></p>
+                <p><strong>Joined:</strong> <%= new Date(user.createdAt).toLocaleDateString() %></p>
+            </div>
+            
+            <div class="card">
+                <h2>👥 All Users <span class="badge"><%= users.length %></span></h2>
+                <% if (users.length === 0) { %>
+                    <p style="color: #a0aec0;">No users yet.</p>
+                <% } else { %>
+                    <ul class="user-list">
+                        <% users.forEach(u => { %>
+                            <li>
+                                <span class="username"><%= u.username %></span>
+                                <span class="email"><%= u.email %></span>
+                            </li>
+                        <% }) %>
+                    </ul>
+                <% } %>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        }
+        
+        if (!localStorage.getItem('token')) {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

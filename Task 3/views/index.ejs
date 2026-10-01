@@ -1,0 +1,363 @@
+<!-- views/index.ejs - Task 3: Advanced CSS Styling and Responsive Design -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    
+    <!-- ===== Font Awesome Icons ===== -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ===== Custom CSS ===== -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- ===== MAIN CARD ===== -->
+        <div class="card">
+            
+            <!-- ===== CARD HEADER ===== -->
+            <div class="card-header">
+                <h1><i class="fas fa-paint-brush"></i> Task 3: Advanced CSS</h1>
+                <p class="subtitle">
+                    <i class="fas fa-magic"></i> 
+                    Beautiful animations, transitions, and fully responsive design
+                </p>
+            </div>
+            
+            <!-- ===== CARD BODY ===== -->
+            <div class="card-body">
+                
+                <!-- ===== STATS BAR ===== -->
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="number"><%= submissions.length %></div>
+                        <div class="label"><i class="fas fa-users"></i> Total Submissions</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="number"><%= submissions.filter(s => s.name).length %></div>
+                        <div class="label"><i class="fas fa-user-check"></i> Unique Users</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="number"><%= new Date().getFullYear() %></div>
+                        <div class="label"><i class="fas fa-calendar"></i> Year</div>
+                    </div>
+                </div>
+                
+                <!-- ===== DISPLAY ERRORS ===== -->
+                <% if (errors && errors.length > 0) { %>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <div>
+                            <strong>Please fix the following errors:</strong>
+                            <ul>
+                                <% errors.forEach(err => { %>
+                                    <li><%= err %></li>
+                                <% }) %>
+                            </ul>
+                        </div>
+                    </div>
+                <% } %>
+                
+                <!-- ===== DISPLAY SUCCESS ===== -->
+                <% if (success) { %>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <div><strong><%= success %></strong></div>
+                    </div>
+                <% } %>
+                
+                <!-- ===== FORM ===== -->
+                <form action="/submit" method="POST" id="mainForm" novalidate>
+                    
+                    <!-- Name -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-user"></i> Full Name
+                            <span class="required">*</span>
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="name"
+                               name="name" 
+                               value="<%= formData.name || '' %>"
+                               placeholder="Enter your full name"
+                               required>
+                        <div class="error-message" id="nameError">
+                            <i class="fas fa-exclamation-circle"></i> 
+                            Name must be at least 2 characters
+                        </div>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-envelope"></i> Email Address
+                            <span class="required">*</span>
+                        </label>
+                        <input type="email" 
+                               class="form-control" 
+                               id="email"
+                               name="email" 
+                               value="<%= formData.email || '' %>"
+                               placeholder="Enter your email address"
+                               required>
+                        <div class="error-message" id="emailError">
+                            <i class="fas fa-exclamation-circle"></i> 
+                            Please enter a valid email
+                        </div>
+                    </div>
+                    
+                    <!-- Message -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-comment"></i> Your Message
+                            <span class="required">*</span>
+                        </label>
+                        <textarea class="form-control" 
+                                  id="message"
+                                  name="message" 
+                                  rows="4" 
+                                  placeholder="Enter your message (min 10 characters)"
+                                  required><%= formData.message || '' %></textarea>
+                        <div class="error-message" id="messageError">
+                            <i class="fas fa-exclamation-circle"></i> 
+                            Message must be at least 10 characters
+                        </div>
+                        <div class="char-counter" id="charCounter">
+                            <i class="fas fa-keyboard"></i> 
+                            Characters: <span id="charCount">0</span> / 10 minimum
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> 
+                        Submit Form
+                    </button>
+                </form>
+                
+                <!-- ===== DIVIDER ===== -->
+                <hr class="divider">
+                
+                <!-- ===== SUBMISSIONS ===== -->
+                <div class="submissions-header">
+                    <h2><i class="fas fa-list"></i> Recent Submissions</h2>
+                    <span class="badge"><%= submissions.length %></span>
+                </div>
+                
+                <% if (submissions.length === 0) { %>
+                    <div class="no-submissions">
+                        <i class="fas fa-inbox"></i>
+                        <p>No submissions yet. Fill out the form above!</p>
+                    </div>
+                <% } %>
+                
+                <div class="submissions-grid">
+                    <% submissions.slice().reverse().forEach(sub => { %>
+                        <div class="submission-card">
+                            <div class="avatar">
+                                <%= sub.name.charAt(0).toUpperCase() %>
+                            </div>
+                            <h4><%= sub.name %></h4>
+                            <div class="email">
+                                <i class="fas fa-envelope"></i> <%= sub.email %>
+                            </div>
+                            <div class="message">
+                                <i class="fas fa-quote-left"></i> 
+                                <%= sub.message %>
+                            </div>
+                            <span class="timestamp">
+                                <i class="far fa-clock"></i> 
+                                <%= sub.timestamp %>
+                            </span>
+                        </div>
+                    <% }) %>
+                </div>
+                
+                <!-- ===== FOOTER ===== -->
+                <div class="footer">
+                    <p>
+                        <span class="brand">Cognifyz Technologies</span> &bull; 
+                        Task 3 - Advanced CSS Styling &amp; Responsive Design
+                    </p>
+                    <p style="margin-top: 4px; font-size: 12px;">
+                        <i class="fas fa-code"></i> Built with 
+                        <i class="fas fa-heart" style="color: #e53e3e;"></i> 
+                        using Express &amp; EJS
+                    </p>
+                </div>
+                
+            </div>
+            <!-- ===== END CARD BODY ===== -->
+            
+        </div>
+        <!-- ===== END CARD ===== -->
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== JAVASCRIPT - Client-side validation ===== -->
+    <!-- ============================================================ -->
+    <script>
+        // ============================================
+        // TASK 3: Client-side validation with enhanced UI
+        // ============================================
+        
+        // DOM Elements
+        const form = document.getElementById('mainForm');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const messageInput = document.getElementById('message');
+        const charCountSpan = document.getElementById('charCount');
+        const charCounter = document.getElementById('charCounter');
+        
+        // ============================================
+        // VALIDATION FUNCTIONS
+        // ============================================
+        
+        function validateName() {
+            const value = nameInput.value.trim();
+            const error = document.getElementById('nameError');
+            
+            if (value.length < 2) {
+                nameInput.classList.add('error');
+                nameInput.classList.remove('success');
+                error.classList.add('show');
+                return false;
+            } else {
+                nameInput.classList.remove('error');
+                nameInput.classList.add('success');
+                error.classList.remove('show');
+                return true;
+            }
+        }
+        
+        function validateEmail() {
+            const value = emailInput.value.trim();
+            const error = document.getElementById('emailError');
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            
+            if (!emailPattern.test(value)) {
+                emailInput.classList.add('error');
+                emailInput.classList.remove('success');
+                error.classList.add('show');
+                return false;
+            } else {
+                emailInput.classList.remove('error');
+                emailInput.classList.add('success');
+                error.classList.remove('show');
+                return true;
+            }
+        }
+        
+        function validateMessage() {
+            const value = messageInput.value.trim();
+            const error = document.getElementById('messageError');
+            
+            if (value.length < 10) {
+                messageInput.classList.add('error');
+                messageInput.classList.remove('success');
+                error.classList.add('show');
+                return false;
+            } else {
+                messageInput.classList.remove('error');
+                messageInput.classList.add('success');
+                error.classList.remove('show');
+                return true;
+            }
+        }
+        
+        function updateCharCounter() {
+            const count = messageInput.value.length;
+            charCountSpan.textContent = count;
+            
+            if (count < 10) {
+                charCounter.className = 'char-counter warning';
+                charCounter.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i> 
+                    Characters: ${count} / 10 minimum needed
+                `;
+            } else {
+                charCounter.className = 'char-counter success';
+                charCounter.innerHTML = `
+                    <i class="fas fa-check-circle"></i> 
+                    Characters: ${count} / Good!
+                `;
+            }
+        }
+        
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        
+        nameInput.addEventListener('input', validateName);
+        emailInput.addEventListener('input', validateEmail);
+        messageInput.addEventListener('input', function() {
+            validateMessage();
+            updateCharCounter();
+        });
+        
+        // ============================================
+        // FORM SUBMISSION
+        // ============================================
+        
+        form.addEventListener('submit', function(e) {
+            const isNameValid = validateName();
+            const isEmailValid = validateEmail();
+            const isMessageValid = validateMessage();
+            
+            if (!isNameValid || !isEmailValid || !isMessageValid) {
+                e.preventDefault();
+                
+                // Find first error and focus
+                const firstError = document.querySelector('.form-control.error');
+                if (firstError) {
+                    firstError.focus();
+                }
+                
+                // Shake animation for form
+                form.style.animation = 'shake 0.5s ease';
+                setTimeout(() => {
+                    form.style.animation = '';
+                }, 500);
+            }
+        });
+        
+        // ============================================
+        // SHAKE ANIMATION (injected)
+        // ============================================
+        
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                20% { transform: translateX(-10px); }
+                40% { transform: translateX(10px); }
+                60% { transform: translateX(-10px); }
+                80% { transform: translateX(10px); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // ============================================
+        // INITIAL SETUP
+        // ============================================
+        
+        updateCharCounter();
+        if (nameInput.value) validateName();
+        if (emailInput.value) validateEmail();
+        if (messageInput.value) {
+            validateMessage();
+            updateCharCounter();
+        }
+        
+        console.log('🎨 Task 3: Advanced CSS with responsive design is ACTIVE!');
+        console.log('📱 The page is fully responsive!');
+        console.log('✨ Animations and transitions are working!');
+    </script>
+
+</body>
+</html>

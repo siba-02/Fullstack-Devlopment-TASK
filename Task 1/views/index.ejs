@@ -1,0 +1,206 @@
+<!-- views/index.ejs - Task 1: HTML Structure -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    
+    <style>
+        /* ===== BASIC STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #1a1a2e;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0,123,255,0.3);
+        }
+        
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        /* ===== ALERT MESSAGES ===== */
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        /* ===== SUBMISSIONS LIST ===== */
+        .submission-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .submission-item h4 {
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+        
+        .submission-item small {
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .badge {
+            background: #007bff;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        hr {
+            margin: 30px 0;
+            border: none;
+            border-top: 2px dashed #ddd;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- ===== HEADER ===== -->
+        <h1>📝 Task 1: Basic Form Submission</h1>
+        <p style="color: #666; margin-bottom: 20px;">
+            Submit your information and see it displayed below
+        </p>
+        
+        <!-- ===== SUCCESS MESSAGE ===== -->
+        <% if (successMessage) { %>
+            <div class="alert alert-success">
+                <strong><%= successMessage %></strong>
+            </div>
+        <% } %>
+        
+        <!-- ===== FORM ===== -->
+        <form action="/submit" method="POST">
+            <div class="form-group">
+                <label for="name">Full Name:</label>
+                <input type="text" 
+                       id="name" 
+                       name="name" 
+                       placeholder="Enter your full name"
+                       required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address:</label>
+                <input type="email" 
+                       id="email" 
+                       name="email" 
+                       placeholder="Enter your email address"
+                       required>
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Your Message:</label>
+                <textarea id="message" 
+                          name="message" 
+                          placeholder="Write your message here..."
+                          required></textarea>
+            </div>
+            
+            <button type="submit">Submit Form</button>
+        </form>
+        
+        <!-- ===== DIVIDER ===== -->
+        <hr>
+        
+        <!-- ===== SUBMISSIONS LIST ===== -->
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>📋 All Submissions</h2>
+            <span class="badge"><%= submissions.length %> total</span>
+        </div>
+        
+        <% if (submissions.length === 0) { %>
+            <p style="color: #888; margin-top: 15px;">
+                No submissions yet. Fill out the form above!
+            </p>
+        <% } %>
+        
+        <% submissions.forEach(sub => { %>
+            <div class="submission-item">
+                <h4><%= sub.name %></h4>
+                <p><strong>Email:</strong> <%= sub.email %></p>
+                <p><%= sub.message %></p>
+                <small>Submitted: <%= sub.timestamp %></small>
+            </div>
+        <% }) %>
+    
+    </div>
+
+</body>
+</html>
